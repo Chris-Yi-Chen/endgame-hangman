@@ -15,22 +15,19 @@ function App() {
     const [farewellMessage, setFarewellMessage] = React.useState("")
 
     const wrongGuessCount = guessedLetters.filter(letter => !currentWord.split("").includes(letter)).length
-    React.useEffect(() => {
-        const language = languages[wrongGuessCount].name
-        const msg = getFarewellText(language)
-        setFarewellMessage(msg)
-    }, [wrongGuessCount])
-
     const correctGuessCount = guessedLetters.length - wrongGuessCount
 
     const isWon = currentWord.length === correctGuessCount
     const isLost = wrongGuessCount >= languages.length
-    console.log(isLost)
-
     const isGameOver = isWon || isLost
 
 
- 
+    /* Status Message */
+    const lastGussedLetter = guessedLetters[guessedLetters.length - 1]
+    const isLastGuessWrong = lastGussedLetter && !currentWord.split('').includes(lastGussedLetter)
+    console.log(isLastGuessWrong)
+
+
     const languageCardElement = languages.map((lang, index) => {
         const isLost = wrongGuessCount > index
         const className = clsx({ 
@@ -84,7 +81,7 @@ function App() {
         <p className="description">Guess the word in under 8 attempts to keep the programming world safe from Assembly!</p>
         
         <Status 
-        
+
         farewellMessage={farewellMessage}
         gameStatusClass={gameStatusClass}/>
         
