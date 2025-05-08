@@ -1,5 +1,7 @@
 import React from 'react'
 import clsx from "clsx"
+import Confetti from 'react-confetti'
+
 
 import Letter from "./components/Letter"
 import Status from "./components/Status"
@@ -8,24 +10,28 @@ import Guess from "./components/Guess"
 
 import { languages } from "./data/languages"
 import { getFarewellText } from './data/farewell'
+import { getRandomWord } from './data/words'
 
 function App() {
-    const [currentWord, setCurrentWord] = React.useState("React")
+    const [currentWord, setCurrentWord] = React.useState(getRandomWord)
     const [guessedLetters, setGuessedLetters] = React.useState([])
-    const [farewellMessage, setFarewellMessage] = React.useState("")
 
     const wrongGuessCount = guessedLetters.filter(letter => !currentWord.split("").includes(letter)).length
-    const correctGuessCount = guessedLetters.length - wrongGuessCount
+    const correctGuessCount = guessedLetters.every(letter => currentWord.split("").includes(letter)).length
 
-    const isWon = currentWord.length === correctGuessCount
+    
+    const isWon = currentWord.split('').every(letter => guessedLetters.includes(letter))
     const isLost = wrongGuessCount >= languages.length
     const isGameOver = isWon || isLost
-
-
+    
+    
+    console.log(currentWord.length)
+    console.log(correctGuessCount)
+    console.log(isWon)
+    
     /* Status Message */
     const lastGussedLetter = guessedLetters[guessedLetters.length - 1]
     const isLastGuessWrong = lastGussedLetter && !currentWord.split('').includes(lastGussedLetter)
-    console.log(isLastGuessWrong)
 
 
     const languageCardElement = languages.map((lang, index) => {
@@ -64,7 +70,7 @@ function App() {
                 key={letter} 
                 value={letter}
                 addLetter={addLetter}
-
+                disabled={isGameOver}
                 className={className}
             />
         )
@@ -72,8 +78,43 @@ function App() {
     )
     const gameStatusClass = clsx("status", {
         won: isWon,
-        lost: isLost
+        lost: isLost,
+        destroy: !isGameOver && isLastGuessWrong
     })
+
+    function renderGameStatus() {
+        if (!isGameOver && isLastGuessWrong) {
+            const languageDestroyed = languages[wrongGuessCount].name
+            const farewellMessage = getFarewellText(languageDestroyed)
+            return { h1: farewellMessage};
+        }
+    
+        else if (isWon) {
+            return {
+                h1: "You win!",
+                h2: "Well done! 🎉"
+            };
+        } 
+        else if (isLost) {
+            return {
+                h1: "Game over!",
+                h2: "You lose! Better start learning Assembly 😭"
+            };
+        }
+        else {
+            return {
+                h1: "",
+                h2: ""
+            }
+        }
+    }
+    const statusContent = renderGameStatus()
+
+    function startNewGame() {
+        setCurrentWord(getRandomWord)
+        setGuessedLetters([])
+    }
+
     return (
     <div className="game-container">
         <h1 className="title">Assembly: Endgame</h1>
@@ -82,7 +123,8 @@ function App() {
         
         <Status 
 
-        farewellMessage={farewellMessage}
+        h1={statusContent.h1}
+        h2={statusContent.h2}
         gameStatusClass={gameStatusClass}/>
         
         <div className="language-card-container">
@@ -90,6 +132,7 @@ function App() {
         </div>
 
         <Guess
+            isLost={isLost}
             currentWord = {currentWord}
             guessedLetters = {guessedLetters}
         />
@@ -98,7 +141,14 @@ function App() {
             {keyboardElement}
         </div>
 
-        {isGameOver && <button className="btn-new-game">New Game</button>}
+        {isGameOver && 
+            <button 
+                className="btn-new-game"
+                onClick={startNewGame}
+                >New Game</button>
+        }
+        
+        {isWon ? <Confetti /> : ""}
     </div>
 )
 }
