@@ -141,11 +141,13 @@ function App() {
             {keyboardElement}
         </div>
 
-        {isGameOver && 
+        {isGameOver ? 
             <button 
                 className="btn-new-game"
                 onClick={startNewGame}
                 >New Game</button>
+            :
+            ""
         }
         
         {isWon ? <Confetti /> : ""}
