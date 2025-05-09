@@ -84,7 +84,7 @@ function App() {
 
     function renderGameStatus() {
         if (!isGameOver && isLastGuessWrong) {
-            const languageDestroyed = languages[wrongGuessCount].name
+            const languageDestroyed = languages[wrongGuessCount - 1].name
             const farewellMessage = getFarewellText(languageDestroyed)
             return { h1: farewellMessage};
         }
