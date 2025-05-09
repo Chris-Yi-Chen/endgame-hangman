@@ -17,7 +17,7 @@ function App() {
     const [guessedLetters, setGuessedLetters] = React.useState([])
 
     const wrongGuessCount = guessedLetters.filter(letter => !currentWord.split("").includes(letter)).length
-    const correctGuessCount = guessedLetters.every(letter => currentWord.split("").includes(letter)).length
+    const correctGuessCount = guessedLetters.filter(letter => currentWord.split("").includes(letter)).length
 
     
     const isWon = currentWord.split('').every(letter => guessedLetters.includes(letter))
